@@ -8,17 +8,17 @@ const logger = new Logger('Config');
 export class Config {
     debugLogging = 'debug';
     'server.port' = '8081';
-    'jhipster.clientApp.name' = 'nhipster';
+    'jhipster.clientApp.name' = 'catiny';
     'jhipster.registry.password' = 'admin';
     'jhipster.security.authentication.jwt.base64-secret' = '';
     'jhipster.security.authentication.jwt.token-validity-in-seconds' = 86400;
     'jhipster.security.authentication.jwt.token-validity-in-seconds-for-remember-me' = 2592000;
     'jhipster.security.authentication.jwt.hash-salt-or-rounds' = 10;
     'jhipster.mail.base-url' = 'http://127.0.0.1:${server.port}';
-    'jhipster.mail.from' = 'nhipster@localhost';
+    'jhipster.mail.from' = 'catiny@localhost';
     'jhipster.swagger.default-include-pattern' = '/api/.*';
-    'jhipster.swagger.title' = 'nhipster API';
-    'jhipster.swagger.description' = 'nhipster API documentation';
+    'jhipster.swagger.title' = 'catiny API';
+    'jhipster.swagger.description' = 'catiny API documentation';
     'jhipster.swagger.version' = '0.0.1';
     'jhipster.swagger.path' = '/api/v2/api-docs';
     'eureka.client.enabled' = true;
@@ -27,8 +27,8 @@ export class Config {
     'eureka.client.register-with-eureka' = true;
     'eureka.client.instance-info-replication-interval-seconds' = 10;
     'eureka.client.registry-fetch-interval-seconds' = 10;
-    'eureka.instance.appname' = 'nhipster';
-    'eureka.instance.instanceId' = 'nhipster:${random.value}';
+    'eureka.instance.appname' = 'catiny';
+    'eureka.instance.instanceId' = 'catiny:${random.value}';
     'eureka.instance.lease-renewal-interval-in-seconds' = 5;
     'eureka.instance.lease-expiration-duration-in-seconds' = 10;
     'eureka.instance.status-page-url-path' = '${management.endpoints.web.base-path}/info';
@@ -41,7 +41,7 @@ export class Config {
     'eureka.instance.prefer-ip-address' = true;
     'eureka.client.service-url.defaultZone' = 'http://admin:${jhipster.registry.password}@localhost:8761/eureka/';
     'cloud.config.uri' = 'http://admin:${jhipster.registry.password}@localhost:8761/config';
-    'cloud.config.name' = 'nhipster';
+    'cloud.config.name' = 'catiny';
     'cloud.config.profile' = 'prod';
     'cloud.config.label' = 'master';
 
@@ -96,7 +96,7 @@ const yamlConfig = yaml.load(fs.readFileSync(yamlConfigPath, 'utf8'));
 logger.log(`Actual process.env.BACKEND_ENV value: ${process.env.BACKEND_ENV}`);
 logger.log('Standard allowed values are: dev, test or prod');
 logger.log(
-    'if you run with a non standard BACKEND_ENV value, remember to add your application-{process.env.BACKEND_ENV}.yml file',
+`if you run with a non standard BACKEND_ENV value, remember to add your application-${process.env.BACKEND_ENV}.yml file`,
 );
 if (!fs.existsSync(envYamlConfigPath)) {
     logger.error(
