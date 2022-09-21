@@ -1,32 +1,23 @@
-import {
-  HttpException,
-  HttpStatus,
-  Logger
-} from '@nestjs/common';
-import {
-  FindManyOptions,
-  FindOneOptions
-} from 'typeorm';
-import {AbstractBaseRepository} from '../repository/abstract.base.repository';
-import {AbstractBaseMapper} from './mapper/abstract.base.mapper';
-import {BaseEntity} from '../domain/base/base.entity';
-import {BaseDTO} from './dto/base.dto';
-import {AbstractBaseSearchRepository} from "../repository/search/abstract.base.search.repository";
+import { HttpException, HttpStatus, Logger } from "@nestjs/common";
+import { FindManyOptions, FindOneOptions } from "typeorm";
+import { AbstractBaseRepository } from "../repository/abstract.base.repository";
+import { AbstractBaseMapper } from "./mapper/abstract.base.mapper";
+import { BaseEntity } from "../domain/base/base.entity";
+import { BaseDTO } from "./dto/base.dto";
+import { AbstractBaseSearchRepository } from "../repository/search/abstract.base.search.repository";
 
 export abstract class AbstractBaseService<E extends BaseEntity, D extends BaseDTO> {
-  logger = new Logger('BaseService');
+  logger = new Logger("BaseService");
 
   protected constructor(
     protected _repository: AbstractBaseRepository<E>,
     protected _mapper: AbstractBaseMapper<E, D>,
     protected _relationshipNames: string[] = [],
-    protected _searchRepository: AbstractBaseSearchRepository<E>
-  ) {
-  }
-
+    protected _searchRepository: AbstractBaseSearchRepository<E>,
+  ) {}
 
   async findById(id: number): Promise<D | undefined> {
-    const options = {relations: this._relationshipNames};
+    const options = { relations: this._relationshipNames };
     const result = await this._repository.findOne(id, options);
     return this._mapper.e2d(result);
   }
@@ -60,7 +51,7 @@ export abstract class AbstractBaseService<E extends BaseEntity, D extends BaseDT
       entity.lastModifiedBy = creator;
     }
     const result = await this._repository.save(entity as any);
-    this._searchRepository.save(result)
+    this._searchRepository.save(result);
     return this._mapper.e2d(result);
   }
 
@@ -76,7 +67,7 @@ export abstract class AbstractBaseService<E extends BaseEntity, D extends BaseDT
     await this._repository.delete(id);
     const entityFind = await this.findById(id);
     if (entityFind) {
-      throw new HttpException('Error, entity not deleted!', HttpStatus.NOT_FOUND);
+      throw new HttpException("Error, entity not deleted!", HttpStatus.NOT_FOUND);
     }
     this._searchRepository.delete(id);
   }

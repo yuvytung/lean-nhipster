@@ -11,49 +11,38 @@ import {
   Req,
   UseGuards,
   UseInterceptors,
-} from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags
-} from '@nestjs/swagger';
-import {JobDTO} from '../../service/dto/job.dto';
-import {
-  Page,
-  PageRequest
-} from '../../domain/base/pagination.entity';
-import {
-  AuthGuard,
-  Roles,
-  RolesGuard,
-  RoleType
-} from '../../security';
-import {HeaderUtil} from '../../client/header-util';
-import {Request} from '../../client/request';
-import {LoggingInterceptor} from '../../client/interceptors/logging.interceptor';
-import {AbstractBaseService} from '../../service/abstract.base.service';
-import {BaseDTO} from "../../service/dto/base.dto";
+} from "@nestjs/common";
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { JobDTO } from "../../service/dto/job.dto";
+import { Page, PageRequest } from "../../domain/base/pagination.entity";
+import { AuthGuard, Roles, RolesGuard, RoleType } from "../../security";
+import { HeaderUtil } from "../../client/header-util";
+import { Request } from "../../client/request";
+import { LoggingInterceptor } from "../../client/interceptors/logging.interceptor";
+import { AbstractBaseService } from "../../service/abstract.base.service";
+import { BaseDTO } from "../../service/dto/base.dto";
 
-@Controller('api/jobs')
+@Controller("api/jobs")
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor, ClassSerializerInterceptor)
 @ApiBearerAuth()
-@ApiTags('jobs')
+@ApiTags("jobs")
 export class AbstractBaseController<D extends BaseDTO> {
+  constructor(protected readonly service: AbstractBaseService<any, any>) {}
 
-  constructor(protected readonly service: AbstractBaseService<any, any>) {
-  }
-
-  @Get('/')
+  @Get("/")
   @Roles(RoleType.USER)
   @ApiResponse({
     status: 200,
-    description: 'List all records',
+    description: "List all records",
     type: "DTO[]",
   })
   async getAll(@Req() req: Request): Promise<D[]> {
-    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const pageRequest: PageRequest = new PageRequest(
+      req.query.page,
+      req.query.size,
+      req.query.sort,
+    );
     const [results, count] = await this.service.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
@@ -63,82 +52,82 @@ export class AbstractBaseController<D extends BaseDTO> {
     return results;
   }
 
-  @Get('/_search')
+  @Get("/_search")
   @Roles(RoleType.ADMIN)
-  @ApiOperation({summary: 'Search entity (default)'})
+  @ApiOperation({ summary: "Search entity (default)" })
   @ApiResponse({
     status: 200,
-    description: 'Search all records by keywords.',
+    description: "Search all records by keywords.",
     type: "DTO[]",
   })
-  @ApiResponse({status: 403, description: 'Forbidden.'})
-  async search(@Req() req: Request,@Query("keywords") keywords: string): Promise<D[]> {
+  @ApiResponse({ status: 403, description: "Forbidden." })
+  async search(@Req() req: Request, @Query("keywords") keywords: string): Promise<D[]> {
     const results = await this.service.search(keywords);
-    HeaderUtil.addEntityCreatedHeaders(req.res, 'Job', results);
+    HeaderUtil.addEntityCreatedHeaders(req.res, "Job", results);
     return results;
   }
 
-  @Get('/:id')
+  @Get("/:id")
   @Roles(RoleType.USER)
   @ApiResponse({
     status: 200,
-    description: 'The found record',
+    description: "The found record",
     type: "DTO",
   })
-  async getOne(@Param('id') id: number): Promise<D> {
+  async getOne(@Param("id") id: number): Promise<D> {
     return this.service.findById(id);
   }
 
-  @Post('/')
+  @Post("/")
   @Roles(RoleType.ADMIN)
-  @ApiOperation({summary: 'Create entity (default)'})
+  @ApiOperation({ summary: "Create entity (default)" })
   @ApiResponse({
     status: 201,
-    description: 'The record has been successfully created.',
+    description: "The record has been successfully created.",
     type: "DTO",
   })
-  @ApiResponse({status: 403, description: 'Forbidden.'})
+  @ApiResponse({ status: 403, description: "Forbidden." })
   async post(@Req() req: Request, @Body() dto: D): Promise<D> {
     const created = await this.service.save(dto, req.user?.login);
-    HeaderUtil.addEntityCreatedHeaders(req.res, 'Job', created.id);
+    HeaderUtil.addEntityCreatedHeaders(req.res, "Job", created.id);
     return created;
   }
 
-  @Put('/')
+  @Put("/")
   @Roles(RoleType.ADMIN)
-  @ApiOperation({summary: 'Update entity (default)'})
+  @ApiOperation({ summary: "Update entity (default)" })
   @ApiResponse({
     status: 200,
-    description: 'The record has been successfully updated.',
+    description: "The record has been successfully updated.",
     type: "DTO",
   })
   async put(@Req() req: Request, @Body() dto: D): Promise<JobDTO> {
-    HeaderUtil.addEntityCreatedHeaders(req.res, 'Job', dto.id);
+    HeaderUtil.addEntityCreatedHeaders(req.res, "Job", dto.id);
     return this.service.update(dto, req.user?.login);
   }
 
-  @Put('/:id')
+  @Put("/:id")
   @Roles(RoleType.ADMIN)
-  @ApiOperation({summary: 'Update entity with id (default)'})
+  @ApiOperation({ summary: "Update entity with id (default)" })
   @ApiResponse({
     status: 200,
-    description: 'The record has been successfully updated.',
+    description: "The record has been successfully updated.",
     type: "DTO",
   })
   async putId(@Req() req: Request, @Body() dto: D): Promise<D> {
-    HeaderUtil.addEntityCreatedHeaders(req.res, 'Job', dto.id);
+    HeaderUtil.addEntityCreatedHeaders(req.res, "Job", dto.id);
     return this.service.update(dto, req.user?.login);
   }
 
-  @Delete('/:id')
+  @Delete("/:id")
   @Roles(RoleType.ADMIN)
-  @ApiOperation({ summary: 'Delete entity (default)' })
+  @ApiOperation({ summary: "Delete entity (default)" })
   @ApiResponse({
     status: 204,
-    description: 'The record has been successfully deleted.',
+    description: "The record has been successfully deleted.",
   })
-  async deleteById(@Req() req: Request, @Param('id') id: number): Promise<void> {
-    HeaderUtil.addEntityDeletedHeaders(req.res, 'Job', id);
+  async deleteById(@Req() req: Request, @Param("id") id: number): Promise<void> {
+    HeaderUtil.addEntityDeletedHeaders(req.res, "Job", id);
     return this.service.deleteById(id);
   }
 }

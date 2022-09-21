@@ -1,5 +1,5 @@
-import {Logger} from "log4js";
+import { Logger } from "log4js";
 
 declare global {
-  var log: Logger
+  var log: Logger;
 }
